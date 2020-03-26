@@ -1,5 +1,18 @@
 class ApplicationController < JSONAPI::ResourceController
+  rescue_from ForbiddenError, with: :reject_forbidden_request
   protect_from_forgery with: :null_session
+
+  def reject_forbidden_request
+    render json: {
+      errors: [
+        {
+          status: 403,
+          title: "Forbidden",
+          detail: "User does not have access to edit this resource"
+        }
+      ]
+    }, :status => 403
+  end
 
   def authenticate
     begin
